@@ -1,6 +1,6 @@
 [package]
 name = "noaa-tides"
-version = "0.1.0-beta.1"
+version = "0.0.1-beta.1"
 edition = "2024"
 description = "A library to fetch data from the NOAA tides and currents CO-OPS API"
 repository = "https://github.com/jbandoro/noaa-tides"
