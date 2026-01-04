@@ -98,6 +98,12 @@ impl NoaaTideClient {
     }
 }
 
+impl Default for NoaaTideClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 enum NoaaResponse<T> {

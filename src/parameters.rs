@@ -18,6 +18,7 @@ pub enum Datum {
 /// <https://api.tidesandcurrents.noaa.gov/api/prod/#timezone>
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "lowercase")]
+#[allow(non_camel_case_types)]
 pub enum Timezone {
     GMT,
     LST,
