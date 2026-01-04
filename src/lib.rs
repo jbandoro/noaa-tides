@@ -139,7 +139,6 @@ pub enum NoaaTideError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito;
 
     #[derive(Debug, Serialize)]
     struct MockProductRequest {
