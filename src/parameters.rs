@@ -7,11 +7,28 @@ use serde::Serialize;
 /// <https://api.tidesandcurrents.noaa.gov/api/prod/#datum>
 #[derive(Debug, Serialize)]
 pub enum Datum {
+    /// Mean Higher High Water
     MHHW,
+    /// Mean High Water
     MHW,
+    /// Mean Tide Level
     MTL,
+    /// Mean Sea Level
+    MSL,
+    /// Mean Low Water
     MLW,
+    /// Mean Lower Low Water (Nautical Chart Datum for all U.S. coastal waters)
     MLLW,
+    /// Columbia River Datum. Only available for certain stations on the Columbia River, Washington/Oregon
+    CRD,
+    /// International Great Lakes Datum. Only available for Great Lakes stations.
+    IGLD,
+    /// Great Lakes Low Water Datum (Nautical Chart Datum for the Great Lakes). Only available for Great Lakes Stations
+    LWD,
+    /// North American Vertical Datum Note! This datum is not available for all stations.
+    NAVD,
+    /// Station Datum - original reference that all data is collected to, uniquely defined for each station.
+    STND,
 }
 
 /// Represents timezone options for requests, see documentation:
@@ -20,8 +37,11 @@ pub enum Datum {
 #[serde(rename_all = "lowercase")]
 #[allow(non_camel_case_types)]
 pub enum Timezone {
+    /// Greenwich Mean Time
     GMT,
+    /// Local Standard Time, not corrected for Daylight Saving Time, local to the requested station.
     LST,
+    /// Local Standard Time, corrected for Daylight Saving Time when appropriate, local to the requested station
     LST_LDT,
 }
 
@@ -54,7 +74,11 @@ pub enum Interval {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Units {
+    /// Metric units (Celsius, meters, cm/s appropriate for the data)
+    /// Visibility data is kilometers (km), Currents data is in cm/s.
     Metric,
+    /// English units (fahrenheit, feet, knots appropriate for the data)
+    /// Visibility data is Nautical Miles (nm), Currents data is in knots
     English,
 }
 
