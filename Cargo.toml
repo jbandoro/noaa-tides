@@ -6,6 +6,7 @@ description = "A library to fetch data from the NOAA tides and currents CO-OPS A
 repository = "https://github.com/jbandoro/noaa-tides"
 keywords = ["noaa", "tides", "predictions"]
 readme = "README.md"
+license-file = "LICENSE"
 
 
 [dependencies]
