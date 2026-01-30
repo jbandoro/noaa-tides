@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         interval: Interval::Hourly,
         units: Units::English,
     };
-    let data = client.fetch(&request).await?;
+    let data = client.fetch_predictions(&request).await?;
     for prediction in data.predictions.iter() {
         println!("{}: {:+.2} ft", prediction.datetime, prediction.height);
     }

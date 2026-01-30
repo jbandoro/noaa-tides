@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         units: Units::English,
     };
 
-    let data = client.fetch(&request).await?;
+    let data = client.fetch_predictions(&request).await?;
     println!("High/low tide predictions:");
     for p in data.predictions.iter() {
         println!(
