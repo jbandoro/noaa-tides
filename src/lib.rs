@@ -52,7 +52,8 @@
 
 /// Module with parameter types for building requests
 pub mod params;
-mod products;
+/// Module with product request and response types
+pub mod products;
 
 pub use crate::products::predictions::{PredictionsRequest, PredictionsResponse};
 
