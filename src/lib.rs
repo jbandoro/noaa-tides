@@ -15,7 +15,7 @@
 //!
 //! Below is an example to fetch high/low tide predictions for the San Francisco Golden Gate station for January 2026
 //! ```no_run
-//! use noaa_tides::{DateRange, Datum, Interval, NoaaTideClient, PredictionsRequest, Timezone, Units};
+//! use noaa_tides::{params, NoaaTideClient, PredictionsRequest};
 //!
 //! use chrono::NaiveDate;
 //!
@@ -25,17 +25,17 @@
 //!
 //!     let request = PredictionsRequest {
 //!         station: "9414290".into(),
-//!         date_range: DateRange {
+//!         date_range: params::DateRange {
 //!             begin_date: NaiveDate::from_ymd_opt(2026, 1, 1).unwrap(),
 //!             end_date: NaiveDate::from_ymd_opt(2026, 1, 31).unwrap(),
 //!         },
-//!         datum: Datum::MLLW,
-//!         time_zone: Timezone::LST_LDT,
-//!         interval: Interval::HighLow,
-//!         units: Units::English,
+//!         datum: params::Datum::MLLW,
+//!         time_zone: params::Timezone::LST_LDT,
+//!         interval: params::Interval::HighLow,
+//!         units: params::Units::English,
 //!     };
 //!
-//!     let data = client.fetch(&request).await?;
+//!     let data = client.fetch_predictions(&request).await?;
 //!     println!("High/low tide predictions:");
 //!     for p in data.predictions.iter() {
 //!         println!(
@@ -49,13 +49,13 @@
 //! }
 
 //!
-mod parameters;
+
+/// Module with parameter types for building requests
+pub mod params;
 mod products;
 
-pub use crate::parameters::{DateRange, Datum, Interval, Timezone, Units};
-pub use crate::products::predictions::{PredictionsRequest, TideType};
+pub use crate::products::predictions::{PredictionsRequest, PredictionsResponse};
 
-use crate::products::NoaaTideProduct;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -76,20 +76,27 @@ impl NoaaTideClient {
         }
     }
 
-    /// Fetch data from the NOAA Tides and Currents API for a product request
-    pub async fn fetch<P>(&self, params: &P) -> Result<P::Response, NoaaTideError>
+    /// Fetch tide predictions for a given request
+    pub async fn fetch_predictions(
+        &self,
+        params: &PredictionsRequest,
+    ) -> Result<PredictionsResponse, NoaaTideError> {
+        self.fetch_product("predictions", params).await
+    }
+
+    async fn fetch_product<P, R>(&self, product_name: &str, params: &P) -> Result<R, NoaaTideError>
     where
-        P: NoaaTideProduct + Serialize,
-        P::Response: serde::de::DeserializeOwned,
+        P: Serialize,
+        R: serde::de::DeserializeOwned,
     {
         let response = self
             .http
             .get(&self.base_url)
             .query(&params)
-            .query(&[("product", params.product_name()), ("format", "json")])
+            .query(&[("product", product_name), ("format", "json")])
             .send()
             .await?
-            .json::<NoaaResponse<P::Response>>()
+            .json::<NoaaResponse<R>>()
             .await?;
         match response {
             NoaaResponse::Success(data) => Ok(data),
@@ -113,14 +120,14 @@ enum NoaaResponse<T> {
 
 /// Represents an error with its message returned by the NOAA API
 #[derive(Debug, Deserialize)]
-pub struct ApiError {
-    pub message: String,
+struct ApiError {
+    message: String,
 }
 
 /// Wrapper for NOAA API error responses
 #[derive(Debug, Deserialize)]
-pub struct ErrorWrapper {
-    pub error: ApiError,
+struct ErrorWrapper {
+    error: ApiError,
 }
 
 /// Possible errors when fetching data from the NOAA API
@@ -150,14 +157,6 @@ mod tests {
         value: i32,
     }
 
-    impl NoaaTideProduct for MockProductRequest {
-        type Response = MockProductResponse;
-
-        fn product_name(&self) -> &'static str {
-            "some_product"
-        }
-    }
-
     #[tokio::test]
     async fn verify_query_parameters() {
         let mut server = mockito::Server::new_async().await;
@@ -182,7 +181,8 @@ mod tests {
             station: "1234567".to_string(),
         };
 
-        let result = client.fetch(&request).await;
+        let result: Result<MockProductResponse, NoaaTideError> =
+            client.fetch_product("some_product", &request).await;
         assert!(result.is_ok());
         mock.assert_async().await;
         assert_eq!(result.unwrap().value, 10);

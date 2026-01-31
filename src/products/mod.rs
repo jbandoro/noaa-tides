@@ -3,12 +3,6 @@ pub mod predictions;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Deserializer};
 
-pub trait NoaaTideProduct {
-    type Response;
-
-    fn product_name(&self) -> &'static str;
-}
-
 fn de_string_to_f32<'de, D>(deserializer: D) -> Result<f32, D::Error>
 where
     D: Deserializer<'de>,
