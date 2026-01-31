@@ -1,5 +1,5 @@
 use super::{de_string_to_f32, de_string_to_native_datetime};
-use crate::parameters::{DateRange, Datum, Interval, Timezone, Units};
+use crate::params::{DateRange, Datum, Interval, Timezone, Units};
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 

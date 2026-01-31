@@ -15,7 +15,7 @@
 //!
 //! Below is an example to fetch high/low tide predictions for the San Francisco Golden Gate station for January 2026
 //! ```no_run
-//! use noaa_tides::{DateRange, Datum, Interval, NoaaTideClient, PredictionsRequest, Timezone, Units};
+//! use noaa_tides::{params, NoaaTideClient, PredictionsRequest};
 //!
 //! use chrono::NaiveDate;
 //!
@@ -25,14 +25,14 @@
 //!
 //!     let request = PredictionsRequest {
 //!         station: "9414290".into(),
-//!         date_range: DateRange {
+//!         date_range: params::DateRange {
 //!             begin_date: NaiveDate::from_ymd_opt(2026, 1, 1).unwrap(),
 //!             end_date: NaiveDate::from_ymd_opt(2026, 1, 31).unwrap(),
 //!         },
-//!         datum: Datum::MLLW,
-//!         time_zone: Timezone::LST_LDT,
-//!         interval: Interval::HighLow,
-//!         units: Units::English,
+//!         datum: params::Datum::MLLW,
+//!         time_zone: params::Timezone::LST_LDT,
+//!         interval: params::Interval::HighLow,
+//!         units: params::Units::English,
 //!     };
 //!
 //!     let data = client.fetch_predictions(&request).await?;
@@ -49,13 +49,12 @@
 //! }
 
 //!
-mod parameters;
+
+/// Module with parameter types for building requests
+pub mod params;
 mod products;
 
-pub use crate::parameters::{DateRange, Datum, Interval, Timezone, Units};
-pub use crate::products::predictions::{
-    Prediction, PredictionsRequest, PredictionsResponse, TideType,
-};
+pub use crate::products::predictions::{PredictionsRequest, PredictionsResponse};
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
